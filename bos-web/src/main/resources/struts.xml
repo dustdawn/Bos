@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<!-- 控制台信息详细度 -->
+	<constant name="struts.devMode" value="false" />
+	<!-- struts2中的action对象由spring创建，整合包中已经整合
+		<constant name="struts.objectFactory" value="spring"/>
+	 -->
+	<package name="basicstruts2" extends="struts-default">
+		<!-- 需要进行权限控制的页面访问 -->
+		<!-- 执行的是默认action  ActionSupport中的execute()方法 
+			不能直接访问WEB-INF下的文件，通过调用ActionSupport的execute转发跳转
+		-->
+		<interceptors>
+		<!-- 自定义拦截器 -->
+			<interceptor name="loginInterceptor" class="com.dustdawn.bos.web.interceptor.LoginInterceptor">
+				<!-- 指定不需要拦截的方法 -->
+				<param name="excludeMethods">login</param>
+			</interceptor>
+				<!-- 定义拦截器栈 -->
+			<interceptor-stack name="myStack">
+				<interceptor-ref name="loginInterceptor"></interceptor-ref>
+				<interceptor-ref name="defaultStack"></interceptor-ref>
+			</interceptor-stack>	
+		</interceptors>
+		<!-- 配置默认拦截器栈 -->
+		<default-interceptor-ref name="myStack"></default-interceptor-ref>
+		<!-- 全局结果集 -->
+		<global-results>
+			<result name="login">/login.jsp</result>
+		</global-results>
+		
+		<!-- 用户管理 -->
+		<action name="page_*_*">
+			<result type="dispatcher">/WEB-INF/pages/{1}/{2}.jsp</result>
+		</action>
+		<action name="userAction_*" class="aaa" method="{1}">
+			<result name="home">/index.jsp</result>
+		</action>
+		
+		<!-- 取派员管理 -->
+		<action name="staffAction_*" class="staffAction" method="{1}">
+			<result name="list">/WEB-INF/pages/base/staff.jsp</result>
+		</action>
+		
+		<!-- 区域管理 -->
+		<action name="regionAction_*" class="regionAction" method="{1}">
+		</action>
+		
+		<!-- 分区管理 -->
+		<action name="subareaAction_*" class="subareaAction" method="{1}">
+			<result name="list">/WEB-INF/pages/base/subarea.jsp</result>
+		</action>
+		
+		<!-- 定区管理 -->
+		<action name="decidedzoneAction_*" class="decidedzoneAction" method="{1}">
+			<result name="list">/WEB-INF/pages/base/decidedzone.jsp</result>
+		</action>
+		
+	</package>
+</struts>
